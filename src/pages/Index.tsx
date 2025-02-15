@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import { useMyLife } from "@/hooks/use-mylife";
 import { ChatMessage } from "@/components/ChatMessage";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/components/ui/use-toast";
 
 interface Message {
   text: string;
@@ -15,11 +16,22 @@ const Index = () => {
   const [input, setInput] = useState("");
   const [role, setRole] = useState("user");
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { sendMessage, response, isLoading } = useMyLife();
+  const { sendMessage, response, isLoading, error } = useMyLife();
+  const { toast } = useToast();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+
+  useEffect(() => {
+    if (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error,
+      });
+    }
+  }, [error, toast]);
 
   useEffect(() => {
     if (response) {
