@@ -5,8 +5,10 @@ declare global {
   interface Window {
     MyLife: {
       WebApp: {
-        chat_completions: (prompt: string, role: string) => void;
-        onEvent: (event: string, callback: (data: any) => void) => void;
+        chatCompletions: (params: { role: string; message: string }) => void;
+      };
+      WebView: {
+        onEvent: (event: string, callback: (eventType: string, eventData: any) => void) => void;
       };
     };
   }
@@ -18,28 +20,25 @@ export const useMyLife = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Check if MyLife.WebApp exists
-    if (!window.MyLife?.WebApp) {
-      console.error('MyLife WebApp is not initialized');
-      setError('MyLife WebApp is not initialized');
+    // Check if MyLife.WebView exists
+    if (!window.MyLife?.WebView) {
+      console.error('MyLife WebView is not initialized');
+      setError('MyLife WebView is not initialized');
       return;
     }
 
-    const ml = window.MyLife.WebApp;
-
-    ml.onEvent('chat_completions_response', (data) => {
+    window.MyLife.WebView.onEvent('chat_completions_response', (eventType, eventData) => {
       setIsLoading(false);
-      try {
-        const parsedData = JSON.parse(data);
-        setResponse(parsedData.response);
-      } catch (error) {
-        console.error('Error parsing response:', error);
-        setError('Error parsing response');
+      if (eventData.error) {
+        console.error('Error in response:', eventData.error);
+        setError(eventData.error);
+        return;
       }
+      setResponse(eventData.response);
     });
   }, []);
 
-  const sendMessage = async (prompt: string, role: string = 'user') => {
+  const sendMessage = async (message: string, role: string = 'user') => {
     if (!window.MyLife?.WebApp) {
       console.error('MyLife WebApp is not initialized');
       setError('MyLife WebApp is not initialized');
@@ -48,7 +47,7 @@ export const useMyLife = () => {
 
     setIsLoading(true);
     try {
-      window.MyLife.WebApp.chat_completions(prompt, role);
+      window.MyLife.WebApp.chatCompletions({ role, message });
     } catch (error) {
       console.error('Error sending message:', error);
       setError('Error sending message');
