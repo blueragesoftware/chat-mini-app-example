@@ -1,69 +1,94 @@
-# Welcome to your Lovable project
+# MyLife MiniApp Example
 
-## Project info
+A simple MyLife MiniApp that demonstrates the chat completions functionality using the MyLife Platform script. Thanks to MyLife Platform's capabilities, you can run chat completions completely free - not just for testing, but in production too! The model runs directly on your users' devices through the MyLife webview.
 
-**URL**: https://lovable.dev/projects/67b30e60-f476-41d9-8d3c-423eff413fab
+🔗 [Try the live demo](https://my-life-mini-app-example.lovable.app/)
 
-## How can I edit this code?
+Built with [Lovable.dev](https://lovable.dev)
 
-There are several ways of editing your application.
+## Overview
 
-**Use Lovable**
+This mini app showcases how to integrate chat completion capabilities into a MyLife MiniApp using React and TypeScript. It provides a clean and simple interface for sending messages and receiving responses through the MyLife Platform. The best part? You can run and test all chat completion features without any cost or API keys, and deploy to production with the same capabilities - the model runs directly on your users' devices!
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/67b30e60-f476-41d9-8d3c-423eff413fab) and start prompting.
+## How It Works
 
-Changes made via Lovable will be committed automatically to this repo.
+The MyLife Platform provides a unique approach to LLM API:
+- 🏃‍♂️ The model runs directly on the user's device through the MyLife webview
+- 💻 No server infrastructure needed - everything happens locally
+- 🔄 Works the same in development and production
+- 💰 Free to use in both testing and production environments
+- 🚀 Scale effortlessly as each user runs their own instance
 
-**Use your preferred IDE**
+## Quick Start
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+1. Create a new project with Lovable.dev
+2. Add the MyLife Platform script to your `index.html`:
+```html
+<script src="https://my-life-platofrm.github.io/mini-apps-script/script.js"></script>
 ```
 
-**Edit a file directly in GitHub**
+That's it! No API keys or additional configuration needed. The MyLife Platform handles all the chat completion functionality locally on your users' devices.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+For more information about the MyLife Platform script and its capabilities, visit the [repository](https://github.com/My-Life-Platofrm/mini-apps-script).
 
-**Use GitHub Codespaces**
+## Usage
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+The app uses a custom React hook for managing chat completions through the MyLife Platform. Here's how to use it:
 
-## What technologies are used for this project?
+```typescript
+import { useMyLife } from './hooks/use-mylife';
 
-This project is built with .
+function ChatComponent() {
+  const { sendMessage, responses, isLoading, error } = useMyLife();
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+  const handleSend = () => {
+    sendMessage('Hello, how are you?', 'user');
+  };
 
-## How can I deploy this project?
+  return (
+    <div>
+      <button onClick={handleSend}>Send Message</button>
+      {isLoading && <p>Loading...</p>}
+      {error && <p>Error: {error}</p>}
+      <div>
+        {responses.map((response, index) => (
+          <p key={index}>{response}</p>
+        ))}
+      </div>
+    </div>
+  );
+}
+```
 
-Simply open [Lovable](https://lovable.dev/projects/67b30e60-f476-41d9-8d3c-423eff413fab) and click on Share -> Publish.
+## Features
 
-## I want to use a custom domain - is that possible?
+- 🚀 Simple and lightweight implementation
+- 💬 Free LLM API in both development and production
+- 🔑 No API keys or external services required
+- 📱 Runs directly on user devices through MyLife webview
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+## Why MyLife Platform?
+
+- 🆓 Free LLM API in both development and production
+- 🚫 No API keys needed
+- 🔒 Privacy-focused - all processing happens on user devices
+- 🌐 No server infrastructure required
+- 📈 Infinite scaling - each user runs their own instance
+- 🚀 Quick setup - just include the script and start building
+- 💪 Powerful features without the complexity
+
+## Production Benefits
+
+- 💰 No hosting costs for AI functionality
+- 🔒 Enhanced privacy as data stays on user devices
+- 📈 Natural scaling - each user brings their own computing power
+- 🚀 Low latency as processing happens locally
+- 💻 Works offline once the model is loaded
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+- [Lovable.dev](https://lovable.dev) ❤️
