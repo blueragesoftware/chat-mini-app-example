@@ -16,7 +16,7 @@ const Index = () => {
   const [input, setInput] = useState("");
   const [role, setRole] = useState("user");
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { sendMessage, response, isLoading, error } = useMyLife();
+  const { sendMessage, responses, isLoading, error } = useMyLife();
   const { toast } = useToast();
 
   const scrollToBottom = () => {
@@ -34,13 +34,11 @@ const Index = () => {
   }, [error, toast]);
 
   useEffect(() => {
-    if (response) {
-      setMessages((prev) => [
-        ...prev,
-        { text: response, isUser: false, role: "assistant" },
-      ]);
+    if (responses.length > messages.filter(m => !m.isUser).length) {
+      const lastResponse = responses[responses.length - 1];
+      setMessages(prev => [...prev, { text: lastResponse, isUser: false, role: "assistant" }]);
     }
-  }, [response]);
+  }, [responses]);
 
   useEffect(() => {
     scrollToBottom();

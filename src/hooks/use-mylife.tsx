@@ -15,7 +15,7 @@ declare global {
 }
 
 export const useMyLife = () => {
-  const [response, setResponse] = useState<string>('');
+  const [responses, setResponses] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -34,7 +34,9 @@ export const useMyLife = () => {
         setError(eventData.error);
         return;
       }
-      setResponse(eventData.response);
+      if (eventData.response) {
+        setResponses(prev => [...prev, eventData.response]);
+      }
     });
   }, []);
 
@@ -55,5 +57,11 @@ export const useMyLife = () => {
     }
   };
 
-  return { sendMessage, response, isLoading, error };
+  return { 
+    sendMessage, 
+    responses,
+    latestResponse: responses[responses.length - 1] || '', 
+    isLoading, 
+    error 
+  };
 };
