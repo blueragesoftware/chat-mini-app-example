@@ -1,6 +1,6 @@
 
 import { useState, useRef, useEffect } from "react";
-import { useTelegram } from "@/hooks/use-telegram";
+import { useMyLife } from "@/hooks/use-mylife";
 import { ChatMessage } from "@/components/ChatMessage";
 import { cn } from "@/lib/utils";
 
@@ -15,7 +15,7 @@ const Index = () => {
   const [input, setInput] = useState("");
   const [role, setRole] = useState("user");
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { sendMessage, response, isLoading } = useTelegram();
+  const { sendMessage, response, isLoading } = useMyLife();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });

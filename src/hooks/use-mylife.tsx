@@ -3,17 +3,8 @@ import { useEffect, useState } from 'react';
 
 declare global {
   interface Window {
-    Telegram: {
+    MyLife: {
       WebApp: {
-        ready: () => void;
-        expand: () => void;
-        close: () => void;
-        MainButton: {
-          show: () => void;
-          hide: () => void;
-          setText: (text: string) => void;
-        };
-        backgroundColor: string;
         chat_completions: (prompt: string, role: string) => void;
         onEvent: (event: string, callback: (data: any) => void) => void;
       };
@@ -21,16 +12,14 @@ declare global {
   }
 }
 
-export const useTelegram = () => {
+export const useMyLife = () => {
   const [response, setResponse] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    const tg = window.Telegram.WebApp;
-    tg.ready();
-    tg.expand();
+    const ml = window.MyLife.WebApp;
 
-    tg.onEvent('chat_completions_response', (data) => {
+    ml.onEvent('chat_completions_response', (data) => {
       setIsLoading(false);
       try {
         const parsedData = JSON.parse(data);
@@ -43,7 +32,7 @@ export const useTelegram = () => {
 
   const sendMessage = async (prompt: string, role: string = 'user') => {
     setIsLoading(true);
-    window.Telegram.WebApp.chat_completions(prompt, role);
+    window.MyLife.WebApp.chat_completions(prompt, role);
   };
 
   return { sendMessage, response, isLoading };
