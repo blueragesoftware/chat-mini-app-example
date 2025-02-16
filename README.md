@@ -2,7 +2,7 @@
 
 A simple MyLife MiniApp that demonstrates the chat completions functionality using the MyLife Platform script. Thanks to MyLife Platform's capabilities, you can run chat completions completely free - not just for testing, but in production too! The model runs directly on your users' devices through the MyLife webview.
 
-🔗 [Try the live demo](https://my-life-mini-app-example.lovable.app/)
+🔗 [Try the live demo](https://chat-mini-app-example.lovable.app/)
 
 Built with [Lovable.dev](https://lovable.dev)
 
