@@ -24,12 +24,12 @@ The MyLife Platform provides a unique approach to LLM API:
 1. Create a new project with Lovable.dev
 2. Add the MyLife Platform script to your `index.html`:
 ```html
-<script src="https://my-life-platofrm.github.io/mini-apps-runtime/script.js"></script>
+<script src="https://my-life-platform.github.io/mini-apps-runtime/script.js"></script>
 ```
 
 That's it! No API keys or additional configuration needed. The MyLife Platform handles all the chat completion functionality locally on your users' devices.
 
-For more information about the MyLife Platform script and its capabilities, visit the [repository](https://github.com/My-Life-Platofrm/mini-apps-runtime).
+For more information about the MyLife Platform script and its capabilities, visit the [repository](https://github.com/My-Life-Platform/mini-apps-runtime).
 
 ## Usage
 
