@@ -48,16 +48,33 @@ export const useMyLife = () => {
         if (data.response) {
           setResponses(prev => [...prev, data.response]);
         }
+      } else if (eventData?.type === 'MiniAppChatCompletionsFailed') {
+        setIsLoading(false);
+        
+        const errorData = eventData.data;
+        const errorMessage = `Error: ${errorData.error_description || 'Unknown error'} (${errorData.error_reason || 'unknown reason'})`;
+        
+        console.error('Chat completion failed:', errorData);
+        setError(errorMessage);
       }
     });
   }, []);
 
   const sendMessage = async (message: string, role: string = 'user') => {
+    // Generate a unique request ID
+    const requestId = `req_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+    
+    const requestPayload = {
+      request_id: requestId,
+      message,
+      role
+    };
+    
     // Check if we have the WebViewProxy available (Swift client)
     if (window.MyLifeWebViewProxy?.postEvent) {
       setIsLoading(true);
       try {
-        window.MyLifeWebViewProxy.postEvent('MiniAppChatCompletions', { role, message });
+        window.MyLifeWebViewProxy.postEvent('MiniAppChatCompletions', requestPayload);
       } catch (error) {
         console.error('Error sending message:', error);
         setError('Error sending message');
@@ -72,7 +89,7 @@ export const useMyLife = () => {
       try {
         // Try to use the method dynamically if it exists
         if (typeof window.MyLife.WebApp.MiniAppChatCompletions === 'function') {
-          window.MyLife.WebApp.MiniAppChatCompletions({ role, message });
+          window.MyLife.WebApp.MiniAppChatCompletions(requestPayload);
         } else {
           console.error('MiniAppChatCompletions method not found');
           setError('MiniAppChatCompletions method not found');
