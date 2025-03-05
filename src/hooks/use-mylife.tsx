@@ -4,12 +4,18 @@ import { useEffect, useState } from 'react';
 declare global {
   interface Window {
     MyLife: {
-      WebApp: {
-        MiniAppChatCompletions: (params: { role: string; message: string }) => void;
-      };
+      WebApp: Record<string, any>;
       WebView: {
         onEvent: (event: string, callback: (eventData: any) => void) => void;
       };
+    };
+    webkit?: {
+      messageHandlers: Record<string, {
+        postMessage: (data: any) => void;
+      }>;
+    };
+    MyLifeWebViewProxy?: {
+      postEvent: (eventName: string, eventData: any) => void;
     };
   }
 }
@@ -47,19 +53,39 @@ export const useMyLife = () => {
   }, []);
 
   const sendMessage = async (message: string, role: string = 'user') => {
-    if (!window.MyLife?.WebApp) {
-      console.error('MyLife WebApp is not initialized');
-      setError('MyLife WebApp is not initialized');
+    // Check if we have the WebViewProxy available (Swift client)
+    if (window.MyLifeWebViewProxy?.postEvent) {
+      setIsLoading(true);
+      try {
+        window.MyLifeWebViewProxy.postEvent('MiniAppChatCompletions', { role, message });
+      } catch (error) {
+        console.error('Error sending message:', error);
+        setError('Error sending message');
+        setIsLoading(false);
+      }
       return;
     }
-
-    setIsLoading(true);
-    try {
-      window.MyLife.WebApp.MiniAppChatCompletions({ role, message });
-    } catch (error) {
-      console.error('Error sending message:', error);
-      setError('Error sending message');
-      setIsLoading(false);
+    
+    // Fallback to the old method if available
+    if (window.MyLife?.WebApp) {
+      setIsLoading(true);
+      try {
+        // Try to use the method dynamically if it exists
+        if (typeof window.MyLife.WebApp.MiniAppChatCompletions === 'function') {
+          window.MyLife.WebApp.MiniAppChatCompletions({ role, message });
+        } else {
+          console.error('MiniAppChatCompletions method not found');
+          setError('MiniAppChatCompletions method not found');
+          setIsLoading(false);
+        }
+      } catch (error) {
+        console.error('Error sending message:', error);
+        setError('Error sending message');
+        setIsLoading(false);
+      }
+    } else {
+      console.error('MyLife WebApp is not initialized');
+      setError('MyLife WebApp is not initialized');
     }
   };
 
