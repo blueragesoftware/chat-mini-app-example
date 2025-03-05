@@ -7,6 +7,7 @@ declare global {
       WebApp: Record<string, any>;
       WebView: {
         onEvent: (event: string, callback: (eventData: any) => void) => void;
+        receiveEvent?: (eventData: any) => void;
       };
     };
     webkit?: {
@@ -33,7 +34,10 @@ export const useMyLife = () => {
       return;
     }
 
-    window.MyLife.WebView.onEvent('receiveEvent', (eventData) => {
+    // Define a handler function that will process events from the MyLife platform
+    const handleEvent = (eventData: any) => {
+      console.log('Received event:', eventData);
+      
       if (eventData?.type === 'MiniAppChatCompletionsResult') {
         setIsLoading(false);
         
@@ -46,6 +50,7 @@ export const useMyLife = () => {
         }
         
         if (data.response) {
+          console.log('Received response:', data.response);
           setResponses(prev => [...prev, data.response]);
         }
       } else if (eventData?.type === 'MiniAppChatCompletionsFailed') {
@@ -57,7 +62,22 @@ export const useMyLife = () => {
         console.error('Chat completion failed:', errorData);
         setError(errorMessage);
       }
-    });
+    };
+
+    // Register the event handler with onEvent
+    window.MyLife.WebView.onEvent('receiveEvent', handleEvent);
+
+    // Also directly define the receiveEvent function as a fallback
+    window.MyLife.WebView.receiveEvent = handleEvent;
+
+    // Cleanup function to remove event listeners
+    return () => {
+      // No direct way to remove the event listener with the MyLife API,
+      // but we can replace it with a no-op function
+      if (window.MyLife?.WebView) {
+        window.MyLife.WebView.receiveEvent = () => {};
+      }
+    };
   }, []);
 
   const sendMessage = async (message: string, role: string = 'user') => {
@@ -69,6 +89,8 @@ export const useMyLife = () => {
       message,
       role
     };
+    
+    console.log('Sending message with payload:', requestPayload);
     
     // Check if we have the WebViewProxy available (Swift client)
     if (window.MyLifeWebViewProxy?.postEvent) {
