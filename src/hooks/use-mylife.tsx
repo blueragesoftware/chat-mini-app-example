@@ -5,10 +5,10 @@ declare global {
   interface Window {
     MyLife: {
       WebApp: {
-        chatCompletions: (params: { role: string; message: string }) => void;
+        MiniAppChatCompletions: (params: { role: string; message: string }) => void;
       };
       WebView: {
-        onEvent: (event: string, callback: (eventType: string, eventData: any) => void) => void;
+        onEvent: (event: string, callback: (eventData: any) => void) => void;
       };
     };
   }
@@ -27,15 +27,21 @@ export const useMyLife = () => {
       return;
     }
 
-    window.MyLife.WebView.onEvent('chat_completions_response', (eventType, eventData) => {
-      setIsLoading(false);
-      if (eventData.error) {
-        console.error('Error in response:', eventData.error);
-        setError(eventData.error);
-        return;
-      }
-      if (eventData.response) {
-        setResponses(prev => [...prev, eventData.response]);
+    window.MyLife.WebView.onEvent('receiveEvent', (eventData) => {
+      if (eventData?.type === 'MiniAppChatCompletionsResult') {
+        setIsLoading(false);
+        
+        const data = eventData.data;
+        
+        if (data.error) {
+          console.error('Error in response:', data.error);
+          setError(data.error);
+          return;
+        }
+        
+        if (data.response) {
+          setResponses(prev => [...prev, data.response]);
+        }
       }
     });
   }, []);
@@ -49,7 +55,7 @@ export const useMyLife = () => {
 
     setIsLoading(true);
     try {
-      window.MyLife.WebApp.chatCompletions({ role, message });
+      window.MyLife.WebApp.MiniAppChatCompletions({ role, message });
     } catch (error) {
       console.error('Error sending message:', error);
       setError('Error sending message');
