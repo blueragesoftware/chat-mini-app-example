@@ -189,12 +189,12 @@ export const useMyLife = () => {
     const updatedMessages = [...messages, { role, content: message }];
     setMessages(updatedMessages);
 
-    // Format messages as an array of objects with role as key and content as value
-    // This is the exact format expected by the API: [{system: "You are a helpful assistant"}, {user: "Hello"}, ...]
-    const messagesForAPI = [];
-    for (const msg of updatedMessages) {
-      messagesForAPI.push({ [msg.role]: msg.content });
-    }
+    // Format messages as an array of objects with role and content as properties
+    // This is the exact format expected by the API: [{"role": "system", "content": "You are a helpful assistant"}, {"role": "user", "content": "Hello"}, ...]
+    const messagesForAPI = updatedMessages.map(msg => ({
+      role: msg.role,
+      content: msg.content
+    }));
 
     const requestPayload = {
       request_id: requestId,
