@@ -1,4 +1,3 @@
-
 import { cn } from "@/lib/utils";
 
 interface ChatMessageProps {
@@ -8,6 +7,9 @@ interface ChatMessageProps {
 }
 
 export const ChatMessage = ({ message, isUser, role }: ChatMessageProps) => {
+  // Display 'You' for user messages and 'Assistant' for non-user messages
+  const displayRole = isUser ? 'You' : 'Assistant';
+
   return (
     <div
       className={cn(
@@ -23,7 +25,7 @@ export const ChatMessage = ({ message, isUser, role }: ChatMessageProps) => {
             : "bg-[#F2F2F7] text-black dark:bg-[#1C1C1E] dark:text-white"
         )}
       >
-        <div className="text-xs opacity-60 mb-1">{role}</div>
+        <div className="text-xs opacity-60 mb-1">{displayRole}</div>
         {message}
       </div>
     </div>

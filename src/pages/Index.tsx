@@ -1,5 +1,4 @@
-
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useMyLife } from "@/hooks/use-mylife";
 import { ChatMessage } from "@/components/ChatMessage";
 import { cn } from "@/lib/utils";
@@ -14,10 +13,10 @@ interface Message {
 const Index = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
-  const [role, setRole] = useState("user");
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { sendMessage, responses, isLoading, error } = useMyLife();
+  const { sendMessage, conversationHistory, isLoading, error, safeAreaInsets } = useMyLife();
   const { toast } = useToast();
+  const conversationLengthRef = useRef(0);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -33,12 +32,22 @@ const Index = () => {
     }
   }, [error, toast]);
 
+  // Update messages when conversation history changes
   useEffect(() => {
-    if (responses.length > messages.filter(m => !m.isUser).length) {
-      const lastResponse = responses[responses.length - 1];
-      setMessages(prev => [...prev, { text: lastResponse, isUser: false, role: "assistant" }]);
+    // Only update if the length has changed
+    if (conversationHistory.length !== conversationLengthRef.current) {
+      conversationLengthRef.current = conversationHistory.length;
+
+      // Convert the conversation history to the format expected by our UI
+      const updatedMessages = conversationHistory.map(msg => ({
+        text: msg.content,
+        isUser: msg.role === 'user',
+        role: msg.role
+      }));
+
+      setMessages(updatedMessages);
     }
-  }, [responses]);
+  }, [conversationHistory]);
 
   useEffect(() => {
     scrollToBottom();
@@ -48,14 +57,21 @@ const Index = () => {
     e.preventDefault();
     if (!input.trim()) return;
 
-    const newMessage = { text: input, isUser: true, role };
-    setMessages((prev) => [...prev, newMessage]);
     setInput("");
-    await sendMessage(input, role);
+    // Always use 'user' as the role
+    await sendMessage(input, 'user');
+  };
+
+  // Apply safe area insets as inline styles
+  const safeAreaStyle = {
+    paddingTop: `${safeAreaInsets.top}px`,
+    paddingBottom: `${safeAreaInsets.bottom}px`,
+    paddingLeft: `${safeAreaInsets.left}px`,
+    paddingRight: `${safeAreaInsets.right}px`,
   };
 
   return (
-    <div className="flex flex-col h-[100dvh] bg-white dark:bg-black">
+    <div className="flex flex-col h-[100dvh] bg-white dark:bg-black" style={safeAreaStyle}>
       <div className="flex-1 overflow-y-auto px-4 py-4">
         <div className="max-w-2xl mx-auto">
           {messages.map((message, index) => (
@@ -82,32 +98,6 @@ const Index = () => {
         className="border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-black p-4"
       >
         <div className="max-w-2xl mx-auto">
-          <div className="flex gap-2 mb-2">
-            <button
-              type="button"
-              onClick={() => setRole("user")}
-              className={cn(
-                "px-3 py-1 rounded-full text-xs transition-all",
-                role === "user"
-                  ? "bg-[#007AFF] text-white"
-                  : "bg-gray-100 dark:bg-gray-800"
-              )}
-            >
-              User
-            </button>
-            <button
-              type="button"
-              onClick={() => setRole("system")}
-              className={cn(
-                "px-3 py-1 rounded-full text-xs transition-all",
-                role === "system"
-                  ? "bg-[#007AFF] text-white"
-                  : "bg-gray-100 dark:bg-gray-800"
-              )}
-            >
-              System
-            </button>
-          </div>
           <div className="flex gap-2">
             <input
               type="text"
