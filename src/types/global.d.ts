@@ -1,7 +1,7 @@
 // Global type declarations
 
 interface Window {
-    MyLife: {
+    Bluerage: {
         WebApp: Record<string, any> & {
             MiniAppChatCompletions?: (data: any) => void;
             MiniAppInit?: (data: any) => void;
@@ -16,7 +16,7 @@ interface Window {
             postMessage: (data: any) => void;
         }>;
     };
-    MyLifeWebViewProxy?: {
+    BluerageWebViewProxy?: {
         postEvent: (eventName: string, eventData: any) => void;
     };
 } 

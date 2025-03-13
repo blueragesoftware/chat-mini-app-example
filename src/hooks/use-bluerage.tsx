@@ -24,7 +24,7 @@ const defaultInsets: SafeAreaInsets = {
 
 declare global {
   interface Window {
-    MyLife: {
+    Bluerage: {
       WebApp: Record<string, any> & {
         MiniAppChatCompletions?: (data: any) => void;
         MiniAppInit?: (data: any) => void;
@@ -39,13 +39,13 @@ declare global {
         postMessage: (data: any) => void;
       }>;
     };
-    MyLifeWebViewProxy?: {
+    BluerageWebViewProxy?: {
       postEvent: (eventName: string, eventData: any) => void;
     };
   }
 }
 
-export const useMyLife = () => {
+export const useBluerage = () => {
   const [responses, setResponses] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -58,14 +58,14 @@ export const useMyLife = () => {
   ]);
 
   useEffect(() => {
-    // Check if MyLife.WebView exists
-    if (!window.MyLife?.WebView) {
-      console.error('MyLife WebView is not initialized');
-      setError('MyLife WebView is not initialized');
+    // Check if Bluerage.WebView exists
+    if (!window.Bluerage?.WebView) {
+      console.error('Bluerage WebView is not initialized');
+      setError('Bluerage WebView is not initialized');
       return;
     }
 
-    // Define a handler function that will process events from the MyLife platform
+    // Define a handler function that will process events from the Bluerage platform
     const handleEvent = (eventData: any) => {
       console.log('Received event:', eventData);
 
@@ -120,10 +120,10 @@ export const useMyLife = () => {
     };
 
     // Register the event handler with onEvent
-    window.MyLife.WebView.onEvent('receiveEvent', handleEvent);
+    window.Bluerage.WebView.onEvent('receiveEvent', handleEvent);
 
     // Also directly define the receiveEvent function as a fallback
-    window.MyLife.WebView.receiveEvent = handleEvent;
+    window.Bluerage.WebView.receiveEvent = handleEvent;
 
     // Send MiniAppInit message
     const initializeApp = () => {
@@ -137,9 +137,9 @@ export const useMyLife = () => {
       console.log('Sending MiniAppInit with payload:', requestPayload);
 
       // Check if we have the WebViewProxy available (Swift client)
-      if (window.MyLifeWebViewProxy?.postEvent) {
+      if (window.BluerageWebViewProxy?.postEvent) {
         try {
-          window.MyLifeWebViewProxy.postEvent('MiniAppInit', requestPayload);
+          window.BluerageWebViewProxy.postEvent('MiniAppInit', requestPayload);
         } catch (error) {
           console.error('Error sending MiniAppInit:', error);
         }
@@ -147,11 +147,11 @@ export const useMyLife = () => {
       }
 
       // Fallback to the old method if available
-      if (window.MyLife?.WebApp) {
+      if (window.Bluerage?.WebApp) {
         try {
           // Try to use the method dynamically if it exists
-          if (typeof window.MyLife.WebApp.MiniAppInit === 'function') {
-            window.MyLife.WebApp.MiniAppInit(requestPayload);
+          if (typeof window.Bluerage.WebApp.MiniAppInit === 'function') {
+            window.Bluerage.WebApp.MiniAppInit(requestPayload);
           } else {
             console.error('MiniAppInit method not found');
           }
@@ -159,11 +159,11 @@ export const useMyLife = () => {
           console.error('Error sending MiniAppInit:', error);
         }
       } else {
-        console.error('MyLife WebApp is not initialized');
+        console.error('Bluerage WebApp is not initialized');
       }
     };
 
-    // Wait a short time to ensure MyLife is loaded, then initialize
+    // Wait a short time to ensure Bluerage is loaded, then initialize
     const timer = setTimeout(() => {
       if (!isInitialized) {
         initializeApp();
@@ -173,10 +173,10 @@ export const useMyLife = () => {
     // Cleanup function to remove event listeners
     return () => {
       clearTimeout(timer);
-      // No direct way to remove the event listener with the MyLife API,
+      // No direct way to remove the event listener with the Bluerage API,
       // but we can replace it with a no-op function
-      if (window.MyLife?.WebView) {
-        window.MyLife.WebView.receiveEvent = () => { };
+      if (window.Bluerage?.WebView) {
+        window.Bluerage.WebView.receiveEvent = () => { };
       }
     };
   }, [isInitialized]);
@@ -204,10 +204,10 @@ export const useMyLife = () => {
     console.log('Sending message with payload:', requestPayload);
 
     // Check if we have the WebViewProxy available (Swift client)
-    if (window.MyLifeWebViewProxy?.postEvent) {
+    if (window.BluerageWebViewProxy?.postEvent) {
       setIsLoading(true);
       try {
-        window.MyLifeWebViewProxy.postEvent('MiniAppChatCompletions', requestPayload);
+        window.BluerageWebViewProxy.postEvent('MiniAppChatCompletions', requestPayload);
       } catch (error) {
         console.error('Error sending message:', error);
         setError('Error sending message');
@@ -217,12 +217,12 @@ export const useMyLife = () => {
     }
 
     // Fallback to the old method if available
-    if (window.MyLife?.WebApp) {
+    if (window.Bluerage?.WebApp) {
       setIsLoading(true);
       try {
         // Try to use the method dynamically if it exists
-        if (typeof window.MyLife.WebApp.MiniAppChatCompletions === 'function') {
-          window.MyLife.WebApp.MiniAppChatCompletions(requestPayload);
+        if (typeof window.Bluerage.WebApp.MiniAppChatCompletions === 'function') {
+          window.Bluerage.WebApp.MiniAppChatCompletions(requestPayload);
         } else {
           console.error('MiniAppChatCompletions method not found');
           setError('MiniAppChatCompletions method not found');
@@ -234,8 +234,8 @@ export const useMyLife = () => {
         setIsLoading(false);
       }
     } else {
-      console.error('MyLife WebApp is not initialized');
-      setError('MyLife WebApp is not initialized');
+      console.error('Bluerage WebApp is not initialized');
+      setError('Bluerage WebApp is not initialized');
     }
   };
 

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { useMyLife } from "@/hooks/use-mylife";
+import { useBluerage } from "@/hooks/use-bluerage";
 import { ChatMessage } from "@/components/ChatMessage";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/components/ui/use-toast";
@@ -14,7 +14,7 @@ const Index = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { sendMessage, conversationHistory, isLoading, error, safeAreaInsets } = useMyLife();
+  const { sendMessage, conversationHistory, isLoading, error, safeAreaInsets } = useBluerage();
   const { toast } = useToast();
   const conversationLengthRef = useRef(0);
 
